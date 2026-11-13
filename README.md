@@ -8,15 +8,18 @@ This is a personal project. It tests a public demo application and contains no c
 
 | Area | Tests | Type |
 | --- | --- | --- |
+| Guest checkout | Cart, guest details, address, payment, on desktop and on a phone-sized screen | UI |
 | Product search | Results match the term, and match what the API returns | UI + API |
 | Sorting and categories | Price order, category page | UI |
-| Product page | Name and price agree with the API | UI + API |
-| Cart | Quantity and line total at checkout | UI |
-| Forms | Required-field validation on contact and login | UI |
-| Products API | Paging, single product, 404, search, empty search | API |
-| Catalog API | Brands, category tree, protected endpoint without a token | API |
+| Product page and cart | Name, price and line totals agree with the API | UI + API |
+| Forms | Required-field validation on contact, login and checkout address | UI |
+| API contracts | Product, product page and brand responses validated against schemas, across every page | API |
+| API behavior | Paging, single product, 404, search, empty search, protected endpoint without a token | API |
+| Accessibility | axe scan of key pages against WCAG 2 A and AA, with a baseline | UI |
 
-The reasoning behind these choices, and what is deliberately left out, is in [docs/test-strategy.md](docs/test-strategy.md).
+27 tests in four projects: `api`, `ui`, `mobile` (the smoke path on a Pixel 7 viewport) and `a11y`.
+
+The reasoning behind these choices, and what is deliberately left out, is in [docs/test-strategy.md](docs/test-strategy.md). What the suite has found so far is in [docs/findings.md](docs/findings.md).
 
 ## How the tests are written
 
@@ -24,6 +27,9 @@ The reasoning behind these choices, and what is deliberately left out, is in [do
 - **Page objects stay small.** They hold locators and the few actions that need a wait, such as search. Assertions live in the tests.
 - **Selectors use `data-test` attributes**, which the application provides for this purpose.
 - **No fixed waits.** Tests wait for the network response or the element they depend on.
+- **Contracts are code.** API responses are parsed with zod schemas in `src/api/schemas.ts`, so a renamed or missing field fails with the exact path.
+- **Steps read like the user journey.** Longer flows use `test.step`, so the report shows where a purchase broke, not just that it did.
+- **Tags pick the run.** `@smoke` is the critical path, `@contract` the API contracts, `@a11y` the accessibility scan.
 
 ## Run it
 
@@ -33,6 +39,8 @@ npx playwright install chromium
 npx playwright test          # everything
 npm run test:api             # API only
 npm run test:ui              # UI only
+npx playwright test --grep @smoke        # critical path only
+npx playwright test --project=mobile     # smoke path on a phone-sized screen
 npm run report               # open the HTML report
 ```
 
@@ -44,7 +52,7 @@ GitHub Actions runs the type check and all tests on every push and pull request,
 
 ## Next
 
+- [ ] Find the cause of finding 1 (deep links in CI)
 - [ ] Sign-in and account flows, using a saved session
-- [ ] Checkout as a guest, through to payment
-- [ ] Filters by category and brand
+- [ ] Firefox and WebKit projects
 - [ ] Publish the HTML report with GitHub Pages
