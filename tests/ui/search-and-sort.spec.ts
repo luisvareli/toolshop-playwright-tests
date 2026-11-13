@@ -37,7 +37,8 @@ test.describe('Finding a product', () => {
   });
 
   test('a category page lists products under its heading', async ({ page, homePage }) => {
-    await page.goto('/category/hand-tools');
+    await page.getByTestId('nav-categories').click();
+    await page.getByTestId('nav-hand-tools').click();
 
     await expect(page.getByRole('heading', { name: 'Category: Hand Tools' })).toBeVisible();
     await expect(homePage.productNames.first()).toBeVisible();
