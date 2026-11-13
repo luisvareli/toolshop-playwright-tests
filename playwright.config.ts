@@ -29,6 +29,18 @@ export default defineConfig({
       testDir: './tests/ui',
       use: { ...devices['Desktop Chrome'], baseURL: WEB_URL },
     },
+    {
+      // The critical path again on a phone-sized screen.
+      name: 'mobile',
+      testDir: './tests/ui',
+      grep: /@smoke/,
+      use: { ...devices['Pixel 7'], baseURL: WEB_URL },
+    },
+    {
+      name: 'a11y',
+      testDir: './tests/a11y',
+      use: { ...devices['Desktop Chrome'], baseURL: WEB_URL },
+    },
   ],
   metadata: { apiUrl: API_URL },
 });
