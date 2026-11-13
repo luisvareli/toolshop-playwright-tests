@@ -9,7 +9,10 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   // The demo site is shared and public, so one retry in CI absorbs network blips.
   retries: process.env.CI ? 1 : 0,
-  reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : [['list'], ['html', { open: 'never' }]],
+  reporter: [['list'], ['html', { open: 'never' }]],
+  // The demo site can be slow from CI runners, so waits are more generous than the defaults.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
   use: {
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
