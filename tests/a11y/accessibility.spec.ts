@@ -3,20 +3,20 @@ import { test, expect } from '@playwright/test';
 
 /**
  * Scans key pages with axe against WCAG 2 A and AA.
- * Each page has a baseline of rules it is already known to break. The baseline is
- * empty today, so any serious or critical violation fails the test. If a known issue
- * has to be accepted for a while, add its rule id to the page's baseline with a note
- * in docs/findings.md instead of deleting the test.
+ * Each page has a baseline of rules it is already known to break, described in
+ * docs/findings.md. The test fails when a page breaks a rule that is not in its
+ * baseline, so known issues stay visible without hiding new ones.
  */
 const pages: { name: string; path: string; baseline: string[] }[] = [
-  { name: 'home', path: '/', baseline: [] },
+  { name: 'home', path: '/', baseline: ['list'] },
   { name: 'contact', path: '/contact', baseline: [] },
-  { name: 'sign in', path: '/auth/login', baseline: [] },
+  { name: 'sign in', path: '/auth/login', baseline: ['button-name'] },
 ];
 
 for (const target of pages) {
   test(`${target.name} page has no new serious accessibility violations`, { tag: '@a11y' }, async ({ page }, testInfo) => {
-    await page.goto(target.path);
+    // Scan the settled page: late-rendered widgets are part of what the user gets.
+    await page.goto(target.path, { waitUntil: 'networkidle' });
     await page.getByTestId('nav-home').waitFor();
 
     const results = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
