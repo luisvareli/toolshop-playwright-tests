@@ -8,11 +8,14 @@ Catch the failures that would cost a shop money or trust first: a customer canno
 
 | Risk | Why it matters | Where it is tested |
 | --- | --- | --- |
+| A customer cannot complete a purchase | Lost sale | `tests/ui/checkout.spec.ts`, also run on a phone-sized screen |
 | Wrong price or total | Direct money impact | `tests/ui/cart.spec.ts` |
 | Search returns the wrong products | Customers cannot buy what they cannot find | `tests/ui/search-and-sort.spec.ts`, `tests/api/products.spec.ts` |
 | UI and API disagree | Shows stale or wrong data to the customer | UI tests that read expected values from the API |
 | Forms accept empty input | Bad data reaches the back end | `tests/ui/forms.spec.ts` |
 | Protected data is readable without signing in | Security | `tests/api/catalog.spec.ts` |
+| The API changes shape without notice | Breaks the front end and every client | `tests/api/contract.spec.ts` |
+| A page becomes unusable with a keyboard or screen reader | Excludes customers, legal exposure | `tests/a11y/accessibility.spec.ts` |
 
 ## API or UI?
 
@@ -20,10 +23,10 @@ A rule is tested at the API when it is about data: paging, search matching, stat
 
 ## What is left out for now
 
-- **Payment and order completion.** Next on the list; it needs a signed-in or guest checkout flow.
+- **Card payments and order history.** Guest checkout with payment on delivery is covered; card details and the signed-in order history are not.
 - **Admin area.** Lower priority for a customer-facing risk view.
-- **Other browsers and mobile sizes.** The suite runs on desktop Chromium only. Adding projects in `playwright.config.ts` is cheap once the flows are stable.
-- **Visual and accessibility checks.**
+- **Firefox and WebKit.** The suite runs on Chromium, at desktop and phone sizes.
+- **Visual regression.**
 - **Performance.**
 
 ## Known limits
